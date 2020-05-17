@@ -27,8 +27,10 @@ class DataController extends Controller
 
         $tanggalSekarang = $this->dateFormatName;
         $kabupaten = Kabupaten::get();
+        $data1 = Data::select('updated_at')->get();
         $kabupatenBelumUpdate = Kabupaten::whereDoesntHave('data', function($query){
-            $query->where('tanggal','=',$this->dateNow)->where('updated_at','!=','0000-00-00 00:00:00');
+            
+            $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
         })->get();
      
         return view('data.index', compact("kabupaten","kabupatenBelumUpdate","tanggalSekarang"));
@@ -57,6 +59,7 @@ class DataController extends Controller
             $data = new Data();
         }else{
             $data = Data::where('id_kabupaten',$request->kabupaten)->where('tanggal',$request->tanggal)->first();
+            $data->status = 1;
         }
         
         $data->id_kabupaten = $request->kabupaten;
