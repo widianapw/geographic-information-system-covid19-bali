@@ -109,11 +109,11 @@
       <div class="card-footer" style="background: white">
         <div class="row">
           <div class="col-6">
-            Color Start
+            <p>Color Start:</p>
             <input type="color" value="#edff6b" class="form-control" id="colorStart">
           </div>
           <div class="col-6">
-            Color End
+            <p>Color End:</p>
             <input type="color" value="#6b6a01" class="form-control" id="colorEnd">
           </div>
         </div>
@@ -174,6 +174,8 @@
 @endsection
 @section("js")
 <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+<script src="https://pendataan.baliprov.go.id/assets/frontend/map/leaflet.markercluster-src.js"></script>
+<script src="http://leaflet.github.io/Leaflet.label/leaflet.label.js" charset="utf-8"></script>
 <script>
   $(document).ready(function () {
     var dataMap=null;
@@ -223,7 +225,7 @@
     });
     
     
-    map.setView(new L.LatLng(-8.500410, 115.195839),9);
+    map.setView(new L.LatLng(-8.500410, 115.195839),10);
     var OpenTopoMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 20,
@@ -236,8 +238,15 @@
     OpenTopoMap.addTo(map);
     var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0',fillColor:'#CCCCCC'};
     setMapColor();
-    
+    // var m = L.marker([-8.500410, 115.195839]).bindLabel('A sweet static label!', { noHide: true })
+		// 	.addTo(map)
+		// 	.showLabel();
+
     function setMapColor(){
+      var markerIcon = L.icon({
+        iconUrl: '/img/marker.png',
+        iconSize: [40, 40],
+      });
       var BADUNG,BULELENG,BANGLI,DENPASAR,GIANYAR,JEMBRANA,KARANGASEM,KLUNGKUNG,TABANAN;
       dataMap.forEach(function(value,index){
         
@@ -266,6 +275,7 @@
       var kmzParser = new L.KMZParser({
           onKMZLoaded: function (kmz_layer, name) {
               control.addOverlay(kmz_layer, name);
+              var markers = L.markerClusterGroup();
               var layers = kmz_layer.getLayers()[0].getLayers();
               layers.forEach(function(layer, index){
                 var kab  = layer.feature.properties.NAME_2;
@@ -326,12 +336,42 @@
                     data +='  </tr>';               
                                   
                     data +='</table>';
+                    if(kab == 'BANGLI'){
+                      markers.addLayer( 
+                        L.marker([-8.254251, 115.366936] ,{
+                          icon: markerIcon
+                        }).bindPopup(data).addTo(map)
+                      );
+                    }
+                    else if(kab == 'GIANYAR'){
+                      markers.addLayer( 
+                        L.marker([-8.422739, 115.255700] ,{
+                          icon: markerIcon
+                        }).bindPopup(data).addTo(map)
+                      );
+
+                    }else if(kab == 'KLUNGKUNG'){
+                      markers.addLayer( 
+                        L.marker([-8.487338, 115.380029] ,{
+                          icon: markerIcon
+                        }).bindPopup(data).addTo(map)
+                      );
+
+                    }else{
+                      markers.addLayer( 
+                        L.marker(layer.getBounds().getCenter(),{
+                          icon: markerIcon
+                        }).bindPopup(data).addTo(map)
+                      );
+                    }
                 }else{
                   var data = "Tidak ada Data pada tanggal tersebut"
                   layer.setStyle(defStyle);
                 }
                 layer.bindPopup(data);
+                
               });
+              map.addLayer(markers);
               kmz_layer.addTo(map);
           }
       });
