@@ -31,7 +31,8 @@ class IndexController extends Controller
         // return $this->dateNow->locale('in')->format('Y/m/d');
         // $now1 = date("F d, Y h:i:s A");
         // return $now1;
-        // 
+        // \
+        
         $tanggalSekarang = $this->dateFormatName;
         $data = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
             ->join('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
@@ -70,18 +71,25 @@ class IndexController extends Controller
         return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang","tanggal"));
     }
 
-    public function getDataMap(Request $request){
-        if (is_null($request->date)) {
-            $tanggal = $this->dateNow;
-        }else{
-            $tanggal = $request->date;
-        }
-        $data = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
+    public function getDataMap(){
+        // if (is_null($request->date)) {
+        //     $tanggal = $this->dateNow;
+        // }else{
+        //     $tanggal = $request->date;
+        // }
+        $tanggal = $this->dateNow;
+        $dataColor = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
         ->rightjoin('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
         ->where('tanggal', $tanggal)
-        ->orderBy('positif','DESC')
+        ->orderBy('positif','ASC')
         ->get();
-        return $data;
+
+        $dataMap = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
+        ->rightjoin('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
+        ->where('tanggal', $tanggal)
+        ->orderBy('tb_kabupaten.id','ASC')
+        ->get();
+        return response()->json(["dataColor"=>$dataColor, "dataMap"=>$dataMap]);
     }
 
     /**

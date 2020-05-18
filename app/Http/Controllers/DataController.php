@@ -29,7 +29,6 @@ class DataController extends Controller
         $kabupaten = Kabupaten::get();
         $data1 = Data::select('updated_at')->get();
         $kabupatenBelumUpdate = Kabupaten::whereDoesntHave('data', function($query){
-            
             $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
         })->get();
      

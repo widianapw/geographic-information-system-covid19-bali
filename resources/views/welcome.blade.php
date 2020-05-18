@@ -179,6 +179,7 @@
 <script>
   $(document).ready(function () {
     var dataMap=null;
+    var dataColor=null;
     var colorMap=[
       "edff6b",
       "dcec5d",
@@ -198,7 +199,8 @@
       dataType:'json',
       data:{date: tanggal},
       success: function(response){
-        dataMap = response;
+        dataMap = response["dataMap"];
+        dataColor = response["dataColor"];
       }
     });
     console.log(dataMap);
@@ -248,9 +250,8 @@
         iconSize: [40, 40],
       });
       var BADUNG,BULELENG,BANGLI,DENPASAR,GIANYAR,JEMBRANA,KARANGASEM,KLUNGKUNG,TABANAN;
-      dataMap.forEach(function(value,index){
-        
-        var colorKab = dataMap[index].kabupaten.toUpperCase();
+      dataColor.forEach(function(value,index){
+        var colorKab = dataColor[index].kabupaten.toUpperCase();
         if(colorKab == "BADUNG"){
           BADUNG = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
         }else if(colorKab=="BULELENG"){
@@ -279,9 +280,10 @@
               var layers = kmz_layer.getLayers()[0].getLayers();
               layers.forEach(function(layer, index){
                 var kab  = layer.feature.properties.NAME_2;
+                console.log(kab);
                 kab = kab.toUpperCase();
                 var kabLower = kab.toLowerCase();
-
+                var data;
                 if(!Array.isArray(dataMap) || !dataMap.length == 0){
                 // set sub layer default style positif covid
                   // var STYLE = {opacity:'1',color:'#000',fillOpacity:'1',fillColor:'#'+colorMap[index]}; 
@@ -305,7 +307,7 @@
                   }else if(kab == 'TABANAN'){
                     layer.setStyle(TABANAN);
                   } 
-                  var data = '<table width="300">';
+                    data = '<table width="300">';
                     data +='  <tr>';
                     data +='    <th colspan="2">Keterangan</th>';
                     data +='  </tr>';
