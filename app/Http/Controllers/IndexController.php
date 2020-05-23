@@ -72,12 +72,12 @@ class IndexController extends Controller
     }
 
     public function getDataMap(){
-        // if (is_null($request->date)) {
-        //     $tanggal = $this->dateNow;
-        // }else{
-        //     $tanggal = $request->date;
-        // }
-        $tanggal = $this->dateNow;
+        if (is_null($request->date)) {
+            $tanggal = $this->dateNow;
+        }else{
+            $tanggal = $request->date;
+        }
+        
         $dataColor = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
         ->rightjoin('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
         ->where('tanggal', $tanggal)
