@@ -71,7 +71,8 @@ class IndexController extends Controller
         return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang","tanggal"));
     }
 
-    public function getDataMap(){
+    public function getDataMap(Request $request){
+
         if (is_null($request->date)) {
             $tanggal = $this->dateNow;
         }else{
