@@ -32,7 +32,7 @@ class IndexController extends Controller
         // $now1 = date("F d, Y h:i:s A");
         // return $now1;
         // \
-        
+        // return $this->dateFormatName;
         $tanggalSekarang = $this->dateFormatName;
         $data = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
             ->join('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
@@ -51,7 +51,7 @@ class IndexController extends Controller
     public function search(Request $request){
         // return $request;
         $tanggal = $request->tanggal;
-        $tanggalSekarang = Carbon::parse($request->tanggal)->format('d F Y');
+        $tanggalSekarang = $this->dateFormatName;
         $cekData = Data::select('kabupaten','meninggal','positif','dirawat','sembuh','tanggal')
             ->rightjoin('tb_kabupaten','tb_laporan.id_kabupaten','=','tb_kabupaten.id')
             ->where('tanggal',$request->tanggal)
