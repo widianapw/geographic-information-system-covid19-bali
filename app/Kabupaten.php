@@ -9,8 +9,8 @@ class Kabupaten extends Model
     protected $table = "tb_kabupaten";
     protected $fillable= ['kabupaten'];
 
-    public function data()
-    {
-        return $this->hasMany('App\Data', 'id_kabupaten');
-    }
+    // public function data()
+    // {
+    //     return $this->hasMany('App\Data', 'id_kabupaten');
+    // }
 }

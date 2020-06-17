@@ -33,7 +33,7 @@
     <!-- small box -->
     <div class="small-box bg-indigo">
       <div class="inner">
-        <h3>{{$totalPositif[0]->positif}} <sup style="font-size: 20px">Org</sup></h3>
+      <h3>{{$totalPositif[0]->total}}<sup style="font-size: 20px">Org</sup></h3>
 
         <p>Positif</p>
       </div>
@@ -47,7 +47,7 @@
     <!-- small box -->
     <div class="small-box bg-green">
       <div class="inner">
-        <h3>{{$totalSembuh[0]->sembuh}} <sup style="font-size: 20px">Org</sup></h3>
+        <h3> {{$totalSembuh[0]->sembuh}}<sup style="font-size: 20px">Org</sup></h3>
 
         <p>Sembuh</p>
       </div>
@@ -61,7 +61,7 @@
     <!-- small box -->
     <div class="small-box bg-yellow">
       <div class="inner">
-        <h3>{{$totalDirawat[0]->dirawat}} <sup style="font-size: 20px">Org</sup></h3>
+        <h3> {{$totalDirawat[0]->perawatan}}<sup style="font-size: 20px">Org</sup></h3>
 
         <p>Dirawat</p>
       </div>
@@ -75,7 +75,7 @@
     <!-- small box -->
     <div class="small-box bg-red">
       <div class="inner">
-        <h3>{{$totalMeninggal[0]->meninggal}} <sup style="font-size: 20px">Org</sup></h3>
+        <h3> {{$totalMeninggal[0]->meninggal}}<sup style="font-size: 20px">Org</sup></h3>
 
         <p>Meninggal</p>
       </div>
@@ -106,7 +106,7 @@
 
       </div>
       <!-- /.card-body -->
-      <div class="card-footer" style="background: white">
+      {{-- <div class="card-footer" style="background: white">
         <div class="row">
           <div class="col-6">
             <p>Color Start:</p>
@@ -123,7 +123,7 @@
           </div>
 
         </div>
-      </div>
+      </div> --}}
     </div>
     <!-- /.card -->
   </div>
@@ -156,10 +156,10 @@
             <tr>
               <td>{{$loop->iteration}}</td>
               <td>{{ucfirst($item->kabupaten)}}</td>
-              <td>{{$item->positif}}</td>
+              <td>{{$item->total}}</td>
               <td>{{$item->meninggal}}</td>
               <td>{{$item->sembuh}}</td>
-              <td>{{$item->dirawat}}</td>
+              <td>{{$item->perawatan}}</td>
               {{-- <td>{{$item->tanggal}}</td> --}}
             </tr>
             @endforeach
@@ -219,8 +219,7 @@
         data:{start: colorStart, end:colorEnd},
         success: function(response){
           colorMap = response;
-          setMapColor();
-          
+          setMapAttr();
         }
       });
       
@@ -239,145 +238,214 @@
         }).addTo(map);
     OpenTopoMap.addTo(map);
     var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0',fillColor:'#CCCCCC'};
-    setMapColor();
+    setMapAttr();
     // var m = L.marker([-8.500410, 115.195839]).bindLabel('A sweet static label!', { noHide: true })
 		// 	.addTo(map)
 		// 	.showLabel();
 
-    function setMapColor(){
+    function setMapAttr(){
       var markerIcon = L.icon({
         iconUrl: '/img/marker.png',
         iconSize: [40, 40],
       });
-      var BADUNG,BULELENG,BANGLI,DENPASAR,GIANYAR,JEMBRANA,KARANGASEM,KLUNGKUNG,TABANAN;
-      dataColor.forEach(function(value,index){
-        var colorKab = dataColor[index].kabupaten.toUpperCase();
-        if(colorKab == "BADUNG"){
-          BADUNG = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab=="BULELENG"){
-          BULELENG = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        } else if(colorKab=="BANGLI"){
-          BANGLI = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab=="DENPASAR"){
-          DENPASAR = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab=="GIANYAR"){
-          GIANYAR = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab =="JEMBRANA"){
-          JEMBRANA = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab=="KARANGASEM"){
-          KARANGASEM = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab=="TABANAN"){
-          TABANAN = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }else if(colorKab =="KLUNGKUNG"){
-          KLUNGKUNG = {opacity:'1',color:'#000',fillOpacity:'1',fillColor: '#'+colorMap[index]};
-        }
-
-      });
+      
       var kmzParser = new L.KMZParser({
+          
           onKMZLoaded: function (kmz_layer, name) {
+            
               control.addOverlay(kmz_layer, name);
               var markers = L.markerClusterGroup();
               var layers = kmz_layer.getLayers()[0].getLayers();
+              console.log(layers[0]);
               layers.forEach(function(layer, index){
                 var kab  = layer.feature.properties.NAME_2;
-                console.log(kab);
-                kab = kab.toUpperCase();
-                var kabLower = kab.toLowerCase();
+                var kec =  layer.feature.properties.NAME_3;
+                var kel = layer.feature.properties.NAME_4;
                 var data;
+              
+                var STYLE = {opacity:'1',color:'#000',fillOpacity:'1'};
+                var HIJAU_MUDA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#81F781'};
+                var HIJAU_TUA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#088A08'};
+                var KUNING = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#FFFF00'};
+                var MERAH_MUDA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#F78181'};
+                var MERAH_TUA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#B40404'};
                 if(!Array.isArray(dataMap) || !dataMap.length == 0){
                 // set sub layer default style positif covid
                   // var STYLE = {opacity:'1',color:'#000',fillOpacity:'1',fillColor:'#'+colorMap[index]}; 
                   // layer.setStyle(STYLE);
-                  if(kab == 'BADUNG'){
-                    layer.setStyle(BADUNG);
-                  }else if(kab == 'BANGLI'){
-                    layer.setStyle(BANGLI);
-                  }else if(kab == 'BULELENG'){
-                    layer.setStyle(BULELENG);
-                  }else if(kab == 'DENPASAR'){
-                    layer.setStyle(DENPASAR);
-                  }else if(kab == 'GIANYAR'){
-                    layer.setStyle(GIANYAR);
-                  }else if(kab == 'JEMBRANA'){
-                    layer.setStyle(JEMBRANA);
-                  }else if(kab == 'KARANGASEM'){
-                    layer.setStyle(KARANGASEM);
-                  }else if(kab == 'KLUNGKUNG'){
-                    layer.setStyle(KLUNGKUNG);
-                  }else if(kab == 'TABANAN'){
-                    layer.setStyle(TABANAN);
-                  } 
-                    data = '<table width="300">';
-                    data +='  <tr>';
-                    data +='    <th colspan="2">Keterangan</th>';
-                    data +='  </tr>';
-                  
-                    data +='  <tr>';
-                    data +='    <td>Kabupaten</td>';
-                    data +='    <td>: '+kab+'</td>';
-                    data +='  </tr>';              
-    
-                    data +='  <tr style="color:red">';
-                    data +='    <td>Positif</td>';
-                    data +='    <td>: '+dataMap[index].positif+'</td>';
-                    data +='  </tr>';
+                    var searchResult = dataMap.filter(function(it){
+                      return it.kecamatan.replace(/\s/g,'').toLowerCase() === kec.replace(/\s/g,'').toLowerCase() &&
+                              it.kelurahan.replace(/\s/g,'').toLowerCase() === kel.replace(/\s/g,'').toLowerCase();
+                    });
+                    if(!Array.isArray(searchResult) || !searchResult.length ==0){
+                      var item = searchResult[0];
+                      if(item.total == 0 ){
+                        layer.setStyle(HIJAU_MUDA);  
+                      }else if(item.perawatan == 0 && item.total>0 && item.sembuh >= 0 && item.meninggal >=0){
+                        layer.setStyle(HIJAU_TUA);
+                      }else if(item.ppln ==1 && item.perawatan == 1 && item.total == 1 && item.tl==0 || item.ppdn ==1 && item.perawatan == 1 && item.total == 1 && item.tl==0){
+                        layer.setStyle(KUNING);
+                      }else if((item.ppln >1 && item.perawatan <= item.ppln && item.sembuh <= item.ppln && item.tl == 0) || (item.ppdn >1 && item.perawatan <= item.ppdn && item.sembuh <= item.ppdn && item.tl == 0)  ){
+                        layer.setStyle(MERAH_MUDA);
+                      }else{
+                        layer.setStyle(MERAH_TUA);
+                      }
+                      data = '<table width="300">';
+                      data +='  <tr>';
+                      data +='    <th colspan="2">Keterangan</th>';
+                      data +='  </tr>';
+                    
+                      data +='  <tr>';
+                      data +='    <td>Kabupaten</td>';
+                      data +='    <td>: '+kab+'</td>';
+                      data +='  </tr>';              
+      
+                      data +='  <tr >';
+                      data +='    <td>Kecamatan</td>';
+                      data +='    <td>: '+kec+'</td>';
+                      data +='  </tr>';
 
-                    data +='  <tr style="color:green">';
-                    data +='    <td>Sembuh</td>';
-                    data +='    <td>: '+dataMap[index].sembuh+'</td>';
-                    data +='  </tr>'; 
+                      data +='  <tr>';
+                      data +='    <td>Kelurahan</td>';
+                      data +='    <td>: '+kel+'</td>';
+                      data +='  </tr>';
 
-                    data +='  <tr style="color:black">';
-                    data +='    <td>Meninggal</td>';
-                    data +='    <td>: '+dataMap[index].meninggal+'</td>';
-                    data +='  </tr>';
+                      data +='  <tr>';
+                      data +='    <td>PP-LN</td>';
+                      data +='    <td>: '+item.ppln+'</td>';
+                      data +='  </tr>';
 
-                    data +='  <tr style="color:blue">';
-                    data +='    <td>Dalam Perawatan</td>';
-                    data +='    <td>: '+dataMap[index].dirawat+'</td>';
-                    data +='  </tr>';               
-                                  
-                    data +='</table>';
-                    if(kab == 'BANGLI'){
-                      markers.addLayer( 
-                        L.marker([-8.254251, 115.366936] ,{
-                          icon: markerIcon
-                        }).bindPopup(data).addTo(map)
-                      );
-                    }
-                    else if(kab == 'GIANYAR'){
-                      markers.addLayer( 
-                        L.marker([-8.422739, 115.255700] ,{
-                          icon: markerIcon
-                        }).bindPopup(data).addTo(map)
-                      );
+                      data +='  <tr>';
+                      data +='    <td>PP-DN</td>';
+                      data +='    <td>: '+item.ppdn+'</td>';
+                      data +='  </tr>';
 
-                    }else if(kab == 'KLUNGKUNG'){
-                      markers.addLayer( 
-                        L.marker([-8.487338, 115.380029] ,{
-                          icon: markerIcon
-                        }).bindPopup(data).addTo(map)
-                      );
+                      data +='  <tr>';
+                      data +='    <td>TL</td>';
+                      data +='    <td>: '+item.tl+'</td>';
+                      data +='  </tr>';
 
+                      data +='  <tr>';
+                      data +='    <td>Lainnya</td>';
+                      data +='    <td>: '+item.lainnya+'</td>';
+                      data +='  </tr>';
+
+                      data +='  <tr style="color:green">';
+                      data +='    <td>Sembuh</td>';
+                      data +='    <td>: '+item.sembuh+'</td>';
+                      data +='  </tr>';
+
+                      data +='  <tr style="color:blue">';
+                      data +='    <td>Dalam Perawatan</td>';
+                      data +='    <td>: '+item.perawatan+'</td>';
+                      data +='  </tr>';
+
+                      data +='  <tr style="color:red">';
+                      data +='    <td>Meninggal</td>';
+                      data +='    <td>: '+item.meninggal+'</td>';
+                      data +='  </tr>';
                     }else{
-                      markers.addLayer( 
-                        L.marker(layer.getBounds().getCenter(),{
-                          icon: markerIcon
-                        }).bindPopup(data).addTo(map)
-                      );
+                      console.log(kel.replace(/\s/g,'').toLowerCase());
+                      console.log(kec.replace(/\s/g,'').toLowerCase());
+                      data = '<table width="300">';
+                      data +='  <tr>';
+                      data +='    <th colspan="2">Keterangan</th>';
+                      data +='  </tr>';
+                    
+                      data +='  <tr>';
+                      data +='    <td>Kabupaten</td>';
+                      data +='    <td>: '+kab+'</td>';
+                      data +='  </tr>';              
+      
+                      data +='  <tr style="color:red">';
+                      data +='    <td>Kecamatan</td>';
+                      data +='    <td>: '+kec+'</td>';
+                      data +='  </tr>';
+
+                      data +='  <tr style="color:red">';
+                      data +='    <td>Kelurahan</td>';
+                      data +='    <td>: '+kel+'</td>';
+                      data +='  </tr>';
                     }
+                    
+
+                    
+                    // data +='  <tr style="color:green">';
+                    // data +='    <td>Sembuh</td>';
+                    // data +='    <td>: '+dataMap[index].sembuh+'</td>';
+                    // data +='  </tr>'; 
+
+                    // data +='  <tr style="color:black">';
+                    // data +='    <td>Meninggal</td>';
+                    // data +='    <td>: '+dataMap[index].meninggal+'</td>';
+                    // data +='  </tr>';
+
+                    // data +='  <tr style="color:blue">';
+                    // data +='    <td>Dalam Perawatan</td>';
+                    // data +='    <td>: '+dataMap[index].dirawat+'</td>';
+                    // data +='  </tr>';               
+                                  
+                    // data +='</table>';
+                    // if(kab == 'BANGLI'){
+                    //   markers.addLayer( 
+                    //     L.marker([-8.254251, 115.366936] ,{
+                    //       icon: markerIcon
+                    //     }).bindPopup(data).addTo(map)
+                    //   );
+                    // }
+                    // else if(kab == 'GIANYAR'){
+                    //   markers.addLayer( 
+                    //     L.marker([-8.422739, 115.255700] ,{
+                    //       icon: markerIcon
+                    //     }).bindPopup(data).addTo(map)
+                    //   );
+
+                    // }else if(kab == 'KLUNGKUNG'){
+                    //   markers.addLayer( 
+                    //     L.marker([-8.487338, 115.380029] ,{
+                    //       icon: markerIcon
+                    //     }).bindPopup(data).addTo(map)
+                    //   );
+
+                    
+                      
+                    
                 }else{
-                  var data = "Tidak ada Data pada tanggal tersebut"
+                  // var data = "Tidak ada Data pada tanggal tersebut"
                   layer.setStyle(defStyle);
+                  data = '<table width="300">';
+                      data +='  <tr>';
+                      data +='    <th colspan="2">Keterangan</th>';
+                      data +='  </tr>';
+                    
+                      data +='  <tr>';
+                      data +='    <td>Kabupaten</td>';
+                      data +='    <td>: '+kab+'</td>';
+                      data +='  </tr>';              
+      
+                      data +='  <tr>';
+                      data +='    <td>Kecamatan</td>';
+                      data +='    <td>: '+kec+'</td>';
+                      data +='  </tr>';
+
+                      data +='  <tr>';
+                      data +='    <td>Kelurahan</td>';
+                      data +='    <td>: '+kel+'</td>';
+                      data +='  </tr>';  
                 }
                 layer.bindPopup(data);
-                
+                // markers.addLayer(L.marker(getRandomLatLng(map)));
+                markers.addLayer( 
+                  L.marker(layer.getBounds().getCenter(),{
+                    icon: markerIcon
+                  }).bindPopup(data)
+                );
               });
               map.addLayer(markers);
               kmz_layer.addTo(map);
           }
       });
-      kmzParser.load('bali-kabupaten.kmz');
+      kmzParser.load('bali-kelurahan.kmz');
       var control = L.control.layers(null, null, {
           collapsed: true
       }).addTo(map);

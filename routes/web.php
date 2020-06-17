@@ -18,6 +18,9 @@ Route::get('/about-me', function () {
 });
 Route::get('/create-pallete','IndexController@createPallette');
 Route::get('/','IndexController@index');
+Route::get('/getKecamatan','DataController@getKecamatan');
+Route::get('/getKelurahan','DataController@getKelurahan');
 Route::get('/getDataMap','IndexController@getDataMap');
 Route::post('/search','IndexController@search');
 Route::resource('/data-kabupaten','DataController');
+
