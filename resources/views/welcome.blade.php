@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title','Dashboard')
+@section('title','Beranda')
 @section('content')
 <div class="row pt-2">
   <div class="col-12">
@@ -105,27 +105,9 @@
         </div>
 
       </div>
-      <!-- /.card-body -->
-      {{-- <div class="card-footer" style="background: white">
-        <div class="row">
-          <div class="col-6">
-            <p>Color Start:</p>
-            <input type="color" value="#edff6b" class="form-control" id="colorStart">
-          </div>
-          <div class="col-6">
-            <p>Color End:</p>
-            <input type="color" value="#6b6a01" class="form-control" id="colorEnd">
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-12">
-            <button class="btn btn-primary form-control" id="btnGenerateColor">Generate Color</button>
-          </div>
-
-        </div>
-      </div> --}}
+      
     </div>
-    <!-- /.card -->
+    
   </div>
 </div>
 
@@ -138,31 +120,53 @@
         <h3 class="card-title">Covid-19 Provinsi Bali <strong>{{$tanggalSekarang}}</strong></h3>
       </div>
       <!-- /.card-header -->
-      <div class="card-body table-responsive p-0">
-        <table class="table table-hover text-nowrap">
+      <div class="card-body table-responsive">
+
+        <table id="example1" class="table table-striped table-bordered">
           <thead>
+          <tr>
             <tr>
-              <th>No</th>
-              <th>Kabupaten</th>
-              <th>Positif</th>
-              <th>Meninggal</th>
-              <th>Sembuh</th>
-              <th>Dirawat</th>
-              {{-- <th>Tanggal</th> --}}
+              <th rowspan=2 style="text-align: center">No</th>
+              <th rowspan=2>Kabupaten</th>
+              <th rowspan=2>Kecamatan</th>
+              <th rowspan=2>Kelurahan</th>
+              <th rowspan=2>Level</th>
+              <th colspan=5 style="text-align: center">Penyebaran</th>
+              <th colspan=4 style="text-align: center">Kondisi</th>
             </tr>
+            <tr>
+              <th>PP-LN</th>
+              <th>PP-DN</th>
+              <th>TL</th>
+              <th>Lainnya</th>
+              <th>Total</th>
+              <th>Perawatan</th>
+              <th>Sembuh Covid</th>
+              <th>Meninggal</th>
+              <th>Total</th>
+            </tr>
+          </tr>
           </thead>
           <tbody>
             @foreach ($data as $item)
             <tr>
               <td>{{$loop->iteration}}</td>
               <td>{{ucfirst($item->kabupaten)}}</td>
+              <td>{{ucfirst($item->kecamatan)}}</td>
+              <td>{{ucfirst($item->kelurahan)}}</td>
+              <td>{{$item->level}}</td>
+              <td>{{$item->ppln}}</td>
+              <td>{{$item->ppdn}}</td>
+              <td>{{$item->tl}}</td>
+              <td>{{$item->lainnya}}</td>
               <td>{{$item->total}}</td>
-              <td>{{$item->meninggal}}</td>
-              <td>{{$item->sembuh}}</td>
               <td>{{$item->perawatan}}</td>
-              {{-- <td>{{$item->tanggal}}</td> --}}
+              <td>{{$item->sembuh}}</td>
+              <td>{{$item->meninggal}}</td>
+              <td>{{$item->total}}</td>
             </tr>
             @endforeach
+          
           </tbody>
         </table>
       </div>
@@ -171,26 +175,17 @@
     <!-- /.card -->
   </div>
 </div>
+  
 @endsection
 @section("js")
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
 <script src="https://pendataan.baliprov.go.id/assets/frontend/map/leaflet.markercluster-src.js"></script>
 <script src="http://leaflet.github.io/Leaflet.label/leaflet.label.js" charset="utf-8"></script>
 <script>
   $(document).ready(function () {
+    $('#example1').DataTable()
     var dataMap=null;
-    var dataColor=null;
-    var colorMap=[
-      "edff6b",
-      "dcec5d",
-      "ccd950",
-      "bcc743",
-      "acb436",
-      "9ba128",
-      "8b8f1b",
-      "7b7c0e",
-      "6b6a01"
-    ];
     var tanggal = $('#tanggalSearch').val();
     $.ajax({
       async:false,
@@ -200,29 +195,11 @@
       data:{date: tanggal},
       success: function(response){
         dataMap = response["dataMap"];
-        dataColor = response["dataColor"];
       }
     });
-    console.log(dataMap);
+    // console.log(dataMap);
     var map = L.map('mapid',{
       fullscreenControl:true,
-    });
-    
-    $('#btnGenerateColor').on('click',function(e){
-      var colorStart = $('#colorStart').val();
-      var colorEnd = $('#colorEnd').val();
-      $.ajax({
-        async:false,
-        url:'/create-pallete',
-        type:'get',
-        dataType:'json',
-        data:{start: colorStart, end:colorEnd},
-        success: function(response){
-          colorMap = response;
-          setMapAttr();
-        }
-      });
-      
     });
     
     
@@ -230,25 +207,19 @@
     var OpenTopoMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 20,
-            // zoomAnimation:true,
+            zoomAnimation:true,
             id: 'mapbox/streets-v11',
-            // tileSize: 512,
-            // zoomOffset: -1,
             accessToken: 'pk.eyJ1Ijoid2lkaWFuYXB3IiwiYSI6ImNrNm95c2pydjFnbWczbHBibGNtMDNoZzMifQ.kHoE5-gMwNgEDCrJQ3fqkQ',
         }).addTo(map);
     OpenTopoMap.addTo(map);
     var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0',fillColor:'#CCCCCC'};
     setMapAttr();
-    // var m = L.marker([-8.500410, 115.195839]).bindLabel('A sweet static label!', { noHide: true })
-		// 	.addTo(map)
-		// 	.showLabel();
 
     function setMapAttr(){
       var markerIcon = L.icon({
         iconUrl: '/img/marker.png',
         iconSize: [40, 40],
-      });
-      
+      });  
       var kmzParser = new L.KMZParser({
           
           onKMZLoaded: function (kmz_layer, name) {
@@ -270,9 +241,6 @@
                 var MERAH_MUDA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#F78181'};
                 var MERAH_TUA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#B40404'};
                 if(!Array.isArray(dataMap) || !dataMap.length == 0){
-                // set sub layer default style positif covid
-                  // var STYLE = {opacity:'1',color:'#000',fillOpacity:'1',fillColor:'#'+colorMap[index]}; 
-                  // layer.setStyle(STYLE);
                     var searchResult = dataMap.filter(function(it){
                       return it.kecamatan.replace(/\s/g,'').toLowerCase() === kec.replace(/\s/g,'').toLowerCase() &&
                               it.kelurahan.replace(/\s/g,'').toLowerCase() === kel.replace(/\s/g,'').toLowerCase();
@@ -367,51 +335,8 @@
                       data +='    <td>: '+kel+'</td>';
                       data +='  </tr>';
                     }
-                    
-
-                    
-                    // data +='  <tr style="color:green">';
-                    // data +='    <td>Sembuh</td>';
-                    // data +='    <td>: '+dataMap[index].sembuh+'</td>';
-                    // data +='  </tr>'; 
-
-                    // data +='  <tr style="color:black">';
-                    // data +='    <td>Meninggal</td>';
-                    // data +='    <td>: '+dataMap[index].meninggal+'</td>';
-                    // data +='  </tr>';
-
-                    // data +='  <tr style="color:blue">';
-                    // data +='    <td>Dalam Perawatan</td>';
-                    // data +='    <td>: '+dataMap[index].dirawat+'</td>';
-                    // data +='  </tr>';               
-                                  
-                    // data +='</table>';
-                    // if(kab == 'BANGLI'){
-                    //   markers.addLayer( 
-                    //     L.marker([-8.254251, 115.366936] ,{
-                    //       icon: markerIcon
-                    //     }).bindPopup(data).addTo(map)
-                    //   );
-                    // }
-                    // else if(kab == 'GIANYAR'){
-                    //   markers.addLayer( 
-                    //     L.marker([-8.422739, 115.255700] ,{
-                    //       icon: markerIcon
-                    //     }).bindPopup(data).addTo(map)
-                    //   );
-
-                    // }else if(kab == 'KLUNGKUNG'){
-                    //   markers.addLayer( 
-                    //     L.marker([-8.487338, 115.380029] ,{
-                    //       icon: markerIcon
-                    //     }).bindPopup(data).addTo(map)
-                    //   );
-
-                    
-                      
-                    
+                 
                 }else{
-                  // var data = "Tidak ada Data pada tanggal tersebut"
                   layer.setStyle(defStyle);
                   data = '<table width="300">';
                       data +='  <tr>';
@@ -450,7 +375,6 @@
           collapsed: true
       }).addTo(map);
       $('.leaflet-control-layers').hide();
-
     }
   });
 </script>

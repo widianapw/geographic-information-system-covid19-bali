@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
-use App\Kabupaten;
+use App\Kelurahan;
+use Alert;
 use App\Data;
 use Carbon\Carbon as Carbon;
 class IndexController extends Controller
@@ -28,35 +29,19 @@ class IndexController extends Controller
      */
     public function index()
     {
-        // $dataMap = Data::get();
-        
-        // $dataMap = Data::Select("*","kelurahan","kecamatan")
-        //     ->rightJoin('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
-        //     ->rightJoin('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
-            
-        //     ->get();
-        // return $dataMap;
-        // return $this->dateNow->locale('in')->format('Y/m/d');
-        // $now1 = date("F d, Y h:i:s A");
-        // return $now1;
-        // \
-        // return $this->dateFormatName;
-        $data = Data::select('kabupaten',DB::raw('COALESCE(SUM(meninggal),0) as meninggal'),DB::raw('COALESCE(SUM(total),0) as total'),DB::raw('COALESCE(SUM(perawatan),0) as perawatan'),DB::raw('COALESCE(SUM(sembuh),0) as sembuh'),'tanggal')
+        $data = Data::select('*','kabupaten','kecamatan','kelurahan')
             ->join('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
             ->join('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
             ->join('tb_kabupaten','tb_kecamatan.id_kabupaten','=','tb_kabupaten.id')
             ->where('tanggal',$this->dateNow)
-            ->groupBy('kabupaten')
-            ->orderBy('total','DESC')
+            ->orderBy('tb_laporan.id','ASC')
             ->get();
-            // return $data;
+    
         $tanggalSekarang = $this->dateFormatName;
         $totalMeninggal = Data::select(DB::raw('COALESCE(SUM(meninggal),0) as meninggal'))->where('tanggal',$this->dateNow)->get();
         $totalPositif = Data::select(DB::raw('COALESCE(SUM(total),0) as total'))->where('tanggal',$this->dateNow)->get();
         $totalDirawat = Data::select(DB::raw('COALESCE(SUM(perawatan),0) as perawatan'))->where('tanggal',$this->dateNow)->get();
         $totalSembuh = Data::select(DB::raw('COALESCE(SUM(sembuh),0) as sembuh'))->where('tanggal',$this->dateNow)->get();
-        // return $data;
-        // return $totalMeninggal;
         return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang"));
     }
 
@@ -65,17 +50,20 @@ class IndexController extends Controller
         $tanggal = $request->tanggal;
         $tanggalSekarang = date("d M Y", strtotime($tanggal));
         
-        $cekData = Data::select('kabupaten',DB::raw('COALESCE(SUM(meninggal),0) as meninggal'),DB::raw('COALESCE(SUM(total),0) as total'),DB::raw('COALESCE(SUM(perawatan),0) as perawatan'),DB::raw('COALESCE(SUM(sembuh),0) as sembuh'),'tanggal')
+        $cekData = Data::select('*','kabupaten','kecamatan','kelurahan')
             ->join('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
             ->join('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
             ->join('tb_kabupaten','tb_kecamatan.id_kabupaten','=','tb_kabupaten.id')
-            ->where('tanggal',$request->tanggal)
-            ->groupBy('kabupaten')
-            ->orderBy('total','DESC')
+            ->where('tanggal',$tanggal)
+            ->orderBy('tb_laporan.id','ASC')
             ->get();
 
         if (count($cekData) == 0) {
-            $data = Kabupaten::select('kabupaten',DB::raw('IFNULL("0",0) as meninggal'), DB::raw('IFNULL("0",0) as total'), DB::raw('IFNULL("0",0) as perawatan'),DB::raw('IFNULL("0",0) as sembuh'))->get();
+            $data = Data::select('kabupaten','kecamatan','kelurahan',DB::raw('IFNULL("0",0) as meninggal'),DB::raw('IFNULL("0",0) as level'), DB::raw('IFNULL("0",0) as ppln'),DB::raw('IFNULL("0",0) as ppdn'),DB::raw('IFNULL("0",0) as tl'),DB::raw('IFNULL("0",0) as lainnya'),DB::raw('IFNULL("0",0) as total'), DB::raw('IFNULL("0",0) as perawatan'),DB::raw('IFNULL("0",0) as sembuh'))
+            ->join('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
+            ->join('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
+            ->join('tb_kabupaten','tb_kecamatan.id_kabupaten','=','tb_kabupaten.id')
+            ->get();
         }else{
             $data = $cekData;
         }
@@ -84,8 +72,12 @@ class IndexController extends Controller
         $totalDirawat = Data::select(DB::raw('COALESCE(SUM(perawatan),0) as perawatan'))->where('tanggal',$tanggal)->get();
         $totalSembuh = Data::select(DB::raw('COALESCE(SUM(sembuh),0) as sembuh'))->where('tanggal',$tanggal)->get();
         // return $data;
-        
-        return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang","tanggal"));
+        if (count($cekData) == 0) {
+            Alert::error('Tidak Ditemukan', 'Tidak ada data pada tanggal '.$tanggalSekarang);
+            return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang","tanggal"));
+        }else{
+            return view('welcome',compact("data","totalMeninggal","totalPositif","totalDirawat","totalSembuh","tanggalSekarang","tanggal"));
+        }
     }
 
     public function getDataMap(Request $request){

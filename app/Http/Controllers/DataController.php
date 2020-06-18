@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+Use Alert;
 use App\Data;
 use App\Kabupaten;
 use App\Kecamatan;
@@ -26,7 +26,6 @@ class DataController extends Controller
      */
     public function index()
     {
-
         $tanggalSekarang = $this->dateFormatName;
         $kabupaten = Kabupaten::get();
         $data1 = Data::select('updated_at')->get();
@@ -74,6 +73,7 @@ class DataController extends Controller
         }
         
         $data->id_kelurahan = $request->kelurahan;
+        $data->level = $request->level;
         $data->ppln = $request->ppln;
         $data->ppdn = $request->ppdn;
         $data->tl = $request->tl;
@@ -89,10 +89,7 @@ class DataController extends Controller
         }else{
             $data->update();
         }
-        
-        return redirect('/data-kabupaten');
-        return $request;
-        //
+        return redirect('/data')->withSuccess('Data Kelurahan Berhasil Diperbarharui!');
     }
 
     /**

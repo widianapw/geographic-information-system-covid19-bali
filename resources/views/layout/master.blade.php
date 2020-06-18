@@ -14,6 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>@yield('title')</title>
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/bootstrap-social.css">
+    <link rel="icon" href="./img/logo.png">
     <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.label/leaflet.label.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -21,6 +22,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
     <link rel="stylesheet" href="https://pendataan.baliprov.go.id/assets/frontend/map/MarkerCluster.css" />
     <link rel="stylesheet" href="https://pendataan.baliprov.go.id/assets/frontend/map/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 </head>
 
@@ -43,7 +45,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="#" class="brand-link">
+            <a href="/" class="brand-link">
                 <img src="./img/logo.png" alt="Lara Logo" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">Kopidid 19</span>
@@ -57,7 +59,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <img src="./img/profile.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">
+                        <a href="/about-me" class="d-block">
                             <h5>Widiana Putra</h5> {{-- {{Auth::user()->name}} --}}
                         </a>
                     </div>
@@ -72,25 +74,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item" class="nav-link">
                             <a href="/" class="nav-link">
                                 <i class="nav-icon fas fa-tachometer-alt blue"></i>
-                                <p>Dashboard</p>
+                                <p>Beranda</p>
                             </a>
-                            {{-- <router-link to="/dashboard" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt blue"></i>
-                                <p>
-                                    Dashboard
-                                </p>
-                            </router-link> --}}
                         </li>
 
                         <li class="nav-item">
-                            <a href="/data-kabupaten" class="nav-link">
+                            <a href="/data" class="nav-link">
                                 <i class="fas fa-book nav-icon teal"></i>
                                 <p>Manajemen Data</p>
                             </a>
-                            {{-- <router-link to="/users" class="nav-link ">
-                                <i class="fas fa-users nav-icon cyan"></i>
-                                <p>Users</p>
-                            </router-link> --}}
                         </li>
 
                         <li class="nav-item">
@@ -100,24 +92,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     About Me
                                 </p>
                             </a>
-                            {{-- <router-link to="/profile" class="nav-link">
-                                <i class="nav-icon fas fa-user yellow"></i>
-                                <p>
-                                    User
-                                </p>
-                            </router-link> --}}
                         </li>
                         <li class="nav-item">
-                            {{-- <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                <i class="nav-icon fas fa-power-off red"></i>
-                                <p>{{ __('Logout') }}
-                                </p>
-                            </a> --}}
-
-                            {{-- <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form> --}}
+                            
                         </li>
 
                     </ul>
@@ -171,6 +148,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     
     <script src="/js/app.js"></script>
     @yield('js')
+    @include('sweetalert::alert')
 </body>
 
 </html>

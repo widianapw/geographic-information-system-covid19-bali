@@ -22,5 +22,5 @@ Route::get('/getKecamatan','DataController@getKecamatan');
 Route::get('/getKelurahan','DataController@getKelurahan');
 Route::get('/getDataMap','IndexController@getDataMap');
 Route::post('/search','IndexController@search');
-Route::resource('/data-kabupaten','DataController');
+Route::resource('/data','DataController');
 

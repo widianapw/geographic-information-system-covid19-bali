@@ -4,7 +4,7 @@
 @section('content')
 <div class="row pt-2">
     <div class="col-md-12">
-       <form action="/data-kabupaten" method="POST">
+       <form action="/data" method="POST">
         @csrf
         
         @if ($kelurahanBelumUpdate->count() > 0)
@@ -57,17 +57,21 @@
 
                     <div class="form-group">
                         <label>Kecamatan</label>
-                        <select class="form-control" style="width: 100%;" name="kecamatan" id="selectKecamatan" required>
+                        <select class="form-control" style="width: 100%;" name="kecamatan" id="selectKecamatan" required disabled>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Kelurahan</label>
-                        <select class="form-control" style="width: 100%;" name="kelurahan" id="selectKelurahan" required>
+                        <select class="form-control" style="width: 100%;" name="kelurahan" id="selectKelurahan" required disabled>
                         </select>
                     </div>
                     
-                    
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">level</label>
+                        <input type="number" name="level" class="form-control" placeholder="Level" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="exampleInputEmail1">PP-LN</label>
                         <input type="number" name="ppln" class="form-control" placeholder="Jumlah PP-LN" required>
@@ -125,6 +129,18 @@
         $('.select2').select2();
 
         $('#selectKabupaten').on('change', function() {
+            var $kecamatan = $('#selectKecamatan');
+            var $kelurahan = $('#selectKelurahan');
+            if (this.value == "") {
+                $('#selectKecamatan').prop('disabled', 'disabled');
+                $('#selectKelurahan').prop('disabled', 'disabled');
+                $kecamatan.empty();
+                $kelurahan.empty();
+            } else {
+                $('#selectKecamatan').prop('disabled', false);
+                $('#selectKelurahan').prop('disabled', false);
+            }
+            
             $.ajax({
                 
                 url:'getKecamatan',
@@ -132,7 +148,7 @@
                 dataType:'json',
                 data:{id_kabupaten: this.value},
                 success: function(response){
-                    var $kecamatan = $('#selectKecamatan');
+                    
                     $kecamatan.empty();
                     console.log(response);
                     for(var i = 0; i < response.length; i++){
@@ -159,7 +175,10 @@
                     $kelurahan.change();
                 }
             });
+            
         });
+
+        
 
         $('#expandable').on('click', function(){
             if($('#listKelurahan').is(':hidden')){
