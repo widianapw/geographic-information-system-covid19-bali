@@ -222,7 +222,7 @@
             accessToken: 'pk.eyJ1Ijoid2lkaWFuYXB3IiwiYSI6ImNrNm95c2pydjFnbWczbHBibGNtMDNoZzMifQ.kHoE5-gMwNgEDCrJQ3fqkQ',
         }).addTo(map);
     OpenTopoMap.addTo(map);
-    var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0.8',fillColor:'#CCCCCC',dashArray:'4'};
+    var defStyle = {opacity:'1',color:'#000',fillOpacity:'0.5',fillColor:'#81F781',dashArray:'4'};
     setMapAttr();
 
     function setMapAttr(){
