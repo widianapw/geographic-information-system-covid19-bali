@@ -24,7 +24,7 @@ return [
     |
     */
 
-    'timer' => env('SWEET_ALERT_TIMER', 5000),
+    'timer' => env('SWEET_ALERT_TIMER', 10000),
 
     /*
     |--------------------------------------------------------------------------
@@ -77,7 +77,7 @@ return [
     */
 
     'animation' => [
-        'enable' => env('SWEET_ALERT_ANIMATION_ENABLE', false),
+        'enable' => env('SWEET_ALERT_ANIMATION_ENABLE', true),
     ],
 
     'animatecss' => env('SWEET_ALERT_ANIMATECSS', 'https://cdn.jsdelivr.net/npm/animate.css'),
@@ -137,7 +137,7 @@ return [
 
         'toast_close_button' => env('SWEET_ALERT_MIDDLEWARE_TOAST_CLOSE_BUTTON', true),
 
-        'timer' => env('SWEET_ALERT_MIDDLEWARE_ALERT_CLOSE_TIME', 6000),
+        'timer' => env('SWEET_ALERT_MIDDLEWARE_ALERT_CLOSE_TIME', 10000),
 
         'auto_display_error_messages' => env('SWEET_ALERT_AUTO_DISPLAY_ERROR_MESSAGES', false),
     ],

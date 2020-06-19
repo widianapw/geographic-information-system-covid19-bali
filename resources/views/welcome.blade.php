@@ -94,7 +94,7 @@
       <div class="card-header">
         <h3 class="card-title">Peta Penyebaran Covid Provinsi Bali <strong>{{$tanggalSekarang}}</strong></h3>
       </div>
-      <!-- /.card-header -->
+      
       <div class="card-body no-padding p-0">
         <div class="row">
           <div class="col-12">
@@ -104,6 +104,16 @@
           </div>
         </div>
 
+      </div>
+      <div class="card-footer color-palette-box">
+        <strong>Keterangan Warna:</strong>
+        <div class="row" style="font-size:70%">
+          <p class="pl-2 pr-2 pt-1 pb-1 m-2" style="background: #81F781">Tidak Pernah Ada Positif</p>
+          <p class="pl-2 pr-2 pt-1 pb-1 m-2 text-light" style="background: #088A08">pernah ada (+) dan kondisi (semuanya sudah sembuh / semuanya meninggal)</p>
+          <p class="pl-2 pr-2 pt-1 pb-1 m-2" style="background: #FFFF00">Hanya ada 1 positif PP-LN/PP-DN & kondisi masih dirawat</p>
+          <p class="pl-2 pr-2 pt-1 pb-1 m-2" style="background: #F78181">Lebih dari 1 positif PP-LN/DN & kondisi masih dirawat</p>
+          <p class="pl-2 pr-2 pt-1 pb-1 m-2 text-light" style="background: #B40404">Ada 1 atau lebih TL positif & kondisi masih dirawat</p>
+        </div>
       </div>
       
     </div>
@@ -212,7 +222,7 @@
             accessToken: 'pk.eyJ1Ijoid2lkaWFuYXB3IiwiYSI6ImNrNm95c2pydjFnbWczbHBibGNtMDNoZzMifQ.kHoE5-gMwNgEDCrJQ3fqkQ',
         }).addTo(map);
     OpenTopoMap.addTo(map);
-    var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0',fillColor:'#CCCCCC'};
+    var defStyle = {opacity:'1',color:'#000000',fillOpacity:'0.8',fillColor:'#CCCCCC',dashArray:'4'};
     setMapAttr();
 
     function setMapAttr(){
@@ -234,12 +244,11 @@
                 var kel = layer.feature.properties.NAME_4;
                 var data;
               
-                var STYLE = {opacity:'1',color:'#000',fillOpacity:'1'};
-                var HIJAU_MUDA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#81F781'};
-                var HIJAU_TUA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#088A08'};
-                var KUNING = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#FFFF00'};
-                var MERAH_MUDA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#F78181'};
-                var MERAH_TUA = {opacity:'1',color:'#000',fillOpacity:'1', fillColor:'#B40404'};
+                var HIJAU_MUDA = {opacity:'0.8',color:'#000', fillColor:'#81F781', fillOpacity:'0.8',dashArray:'4'};
+                var HIJAU_TUA = {opacity:'0.8',color:'#000', fillColor:'#088A08',fillOpacity:'0.8',dashArray:'4'};
+                var KUNING = {opacity:'0.8',color:'#000', fillColor:'#FFFF00',fillOpacity:'0.8',dashArray:'4'};
+                var MERAH_MUDA = {opacity:'0.8',color:'#000', fillColor:'#F78181',fillOpacity:'0.8',dashArray:'4'};
+                var MERAH_TUA = {opacity:'0.8',color:'#000', fillColor:'#B40404',fillOpacity:'0.8', dashArray:'4'};
                 if(!Array.isArray(dataMap) || !dataMap.length == 0){
                     var searchResult = dataMap.filter(function(it){
                       return it.kecamatan.replace(/\s/g,'').toLowerCase() === kec.replace(/\s/g,'').toLowerCase() &&
