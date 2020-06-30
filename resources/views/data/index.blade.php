@@ -6,15 +6,13 @@
     <div class="col-md-12">
        <form action="/data" method="POST">
         @csrf
-        
         @if ($kelurahanBelumUpdate->count() > 0)
-        <div class="card card-maroon">
+            <div class="card card-maroon">
         @else
-        <div class="card card-green mt-5">
+            <div class="card card-green mt-5">
         @endif
-            
                 <div class="card-header">
-                    <h3 class="card-title">Tambah/update Data</h3>
+                    <h3 class="card-title">Tambah dan update Data</h3>
                 </div>
                 <div class="card-body">
                    
