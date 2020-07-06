@@ -12,10 +12,14 @@
             <div class="card card-green mt-5">
         @endif
                 <div class="card-header">
-                    <h3 class="card-title">Tambah dan update Data</h3>
+                    <h4 class="card-title">Tambah dan update Data</h4>
                 </div>
                 <div class="card-body">
-                   
+                    @if (session('alert'))
+                        <div class="alert alert-success">
+                            {{ session('alert') }}
+                        </div>
+                    @endif
                     @if ($kelurahanBelumUpdate->count() > 0)
                     <div class="callout callout-danger red">
                     <h4><i class="icon fa fa-calendar red"></i> Data Kelurahan Yang Belum Diupdate per <strong>{{$tanggalSekarang}}</strong> <a href="#" id="expandable">Lihat detail</a></h4>
@@ -39,69 +43,79 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                             </div>
-                            <input type="date" name="tanggal" class="form-control" required>
+                            <input type="date" name="tanggal" @if(isset($data)) value="{{$data->tanggal}}" readonly @endif class="form-control" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Kabupaten</label>
-                        <select class="form-control" style="width: 100%;" name="kabupaten" id="selectKabupaten" required>
-                            <option value="">Pilih kabupaten</option>
-                            @foreach ($kabupaten as $item)
-                                <option value="{{$item->id}}">{{ucfirst($item->kabupaten)}}</option>      
-                            @endforeach
+                        <select class="form-control" style="width: 100%;" name="kabupaten" @if(isset($data)) readonly @endif id="selectKabupaten" required>
+                            @if (isset($thisKabupaten))
+                                <option value="{{$thisKabupaten->id}}" selected>{{ucfirst($thisKabupaten->kabupaten)}}</option>
+                            @else
+                                <option value="">Pilih kabupaten</option>    
+                                @foreach ($kabupaten as $item)
+                                    <option value="{{$item->id}}">{{ucfirst($item->kabupaten)}}</option>      
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Kecamatan</label>
-                        <select class="form-control" style="width: 100%;" name="kecamatan" id="selectKecamatan" required disabled>
+                        <select class="form-control" style="width: 100%;" name="kecamatan" id="selectKecamatan" required @if (isset($thisKecamatan)) readonly @else disabled @endif>
+                            @if (isset($thisKecamatan))
+                                <option value="{{$thisKecamatan->id}}">{{$thisKecamatan->kecamatan}}</option>
+                            @endif
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Kelurahan</label>
-                        <select class="form-control" style="width: 100%;" name="kelurahan" id="selectKelurahan" required disabled>
+                        <select class="form-control" style="width: 100%;" name="kelurahan" id="selectKelurahan" required @if (isset($thisKecamatan))  readonly @else disabled  @endif>
+                            @if (isset($thisKelurahan))
+                                <option value="{{$thisKelurahan->id}}">{{$thisKelurahan->kelurahan}}</option>
+                            @endif
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="exampleInputEmail1">level</label>
-                        <input type="number" name="level" class="form-control" placeholder="Level" required>
+                    <input type="number" name="level" @if(isset($data)) value="{{$data->level}}" @endif class="form-control" placeholder="Level" required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputEmail1">PP-LN</label>
-                        <input type="number" name="ppln" class="form-control" placeholder="Jumlah PP-LN" required>
+                        <input type="number" name="ppln" class="form-control" placeholder="Jumlah PP-LN" @if(isset($data)) value="{{$data->ppdn}}" @endif required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputEmail1">PP-DN</label>
-                        <input type="number" name="ppdn" class="form-control" placeholder="Jumlah PP-DN" required>
+                        <input type="number" name="ppdn" class="form-control" placeholder="Jumlah PP-DN" @if(isset($data)) value="{{$data->ppdn}}" @endif required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputEmail1">TL</label>
-                        <input type="number" name="tl" class="form-control" placeholder="Jumlah TL" required>
+                        <input type="number" name="tl" class="form-control" placeholder="Jumlah TL" @if(isset($data)) value="{{$data->tl}}" @endif required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputEmail1">Lainnya</label>
-                        <input type="number" name="lainnya" class="form-control" placeholder="Jumlah Lainnya" required>
+                        <input type="number" name="lainnya" class="form-control" placeholder="Jumlah Lainnya" @if(isset($data)) value="{{$data->lainnya}}" @endif required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputEmail1">Sembuh</label>
-                        <input type="number" name="sembuh" class="form-control" placeholder="Jumlah Sembuh" required>
+                        <input type="number" name="sembuh" class="form-control" placeholder="Jumlah Sembuh" @if(isset($data)) value="{{$data->sembuh}}" @endif required>
                     </div>
 
                     <div class="form-group">
                         <label for="exampleInputPassword1">Dirawat</label>
-                        <input type="number" name="perawatan" class="form-control" placeholder="Jumlah Dirawat" required>
+                        <input type="number" name="perawatan" class="form-control" placeholder="Jumlah Dirawat" @if(isset($data)) value="{{$data->perawatan}}" @endif required>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">meninggal</label>
-                        <input type="number" name="meninggal" class="form-control" placeholder="Jumlah Meninggal" required>
+                        <input type="number" name="meninggal" class="form-control" placeholder="Jumlah Meninggal" @if(isset($data)) value="{{$data->meninggal}}" @endif required>
                     </div>
                     
                 </div>
@@ -141,7 +155,7 @@
             
             $.ajax({
                 
-                url:'getKecamatan',
+                url:'../getKecamatan',
                 type:'get',
                 dataType:'json',
                 data:{id_kabupaten: this.value},
@@ -159,7 +173,7 @@
 
         $('#selectKecamatan').on('change', function() {
             $.ajax({
-                url:'getKelurahan',
+                url:'../getKelurahan',
                 type:'get',
                 dataType:'json',
                 data:{id_kecamatan: this.value},

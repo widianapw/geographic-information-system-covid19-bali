@@ -5,6 +5,7 @@ Use Alert;
 use App\Data;
 use App\Kabupaten;
 use App\Kecamatan;
+use DB;
 use App\Kelurahan;
 use Illuminate\Http\Request;
 use Carbon\Carbon as Carbon;
@@ -26,16 +27,46 @@ class DataController extends Controller
      */
     public function index()
     {
+        
         $tanggalSekarang = $this->dateFormatName;
-        $kabupaten = Kabupaten::get();
-        $data1 = Data::select('updated_at')->get();
+        // $kabupaten = Kabupaten::get();
+        // $data1 = Data::select('updated_at')->get();
 
-        $kelurahanBelumUpdate = Kelurahan::whereDoesntHave('data', function($query){
-            $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
-        })->get();
+        // $kelurahanBelumUpdate = Kelurahan::whereDoesntHave('data', function($query){
+        //     $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
+        // })->get();
         
      
-        return view('data.index', compact("kabupaten","kelurahanBelumUpdate","tanggalSekarang"));
+        // return view('data.index', compact("kabupaten","kelurahanBelumUpdate","tanggalSekarang"));
+        $data = Data::select('*','tb_laporan.id','kabupaten','kecamatan','kelurahan')
+            ->join('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
+            ->join('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
+            ->join('tb_kabupaten','tb_kecamatan.id_kabupaten','=','tb_kabupaten.id')
+            ->where('tanggal',$this->dateNow)
+            ->orderBy('tb_laporan.id','ASC')
+            ->get();
+        // return $data;
+        return view("data.data", compact("data","tanggalSekarang"));
+    }
+
+
+    public function searchData(Request $request){
+        $tanggal = $request->tanggal;
+        $tanggalSekarang = date("d M Y", strtotime($tanggal));
+        $cekData = Data::select('*','tb_laporan.id','kabupaten','kecamatan','kelurahan')
+            ->join('tb_kelurahan','tb_laporan.id_kelurahan','=','tb_kelurahan.id')
+            ->join('tb_kecamatan','tb_kelurahan.id_kecamatan','=','tb_kecamatan.id')
+            ->join('tb_kabupaten','tb_kecamatan.id_kabupaten','=','tb_kabupaten.id')
+            ->where('tanggal',$tanggal)
+            ->orderBy('tb_laporan.id','ASC')
+            ->get();
+        if (count($cekData) == 0) {
+            // Alert::error('Tidak Ditemukan', 'Tidak ada data pada tanggal '.$tanggalSekarang);
+            return redirect('/data')->with('alert','Data pada Tanggal '.$tanggalSekarang.' Tidak Ditemukan');
+        }else{
+            $data = $cekData;
+            return view('data.data',compact("data","tanggalSekarang","tanggal"));
+        }
     }
 
     /**
@@ -45,7 +76,14 @@ class DataController extends Controller
      */
     public function create()
     {
-        //
+        $tanggalSekarang = $this->dateFormatName;
+        $kabupaten = Kabupaten::get();
+        $data1 = Data::select('updated_at')->get();
+
+        $kelurahanBelumUpdate = Kelurahan::whereDoesntHave('data', function($query){
+            $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
+        })->get();
+        return view('data.index', compact("kabupaten","kelurahanBelumUpdate","tanggalSekarang"));
     }
 
     public function getKecamatan(Request $request){
@@ -64,6 +102,7 @@ class DataController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request;
         $cek = Data::where('id_kelurahan',$request->kelurahan)->where('tanggal',$request->tanggal)->count();
         if($cek == 0){
             $data = new Data();
@@ -87,9 +126,9 @@ class DataController extends Controller
         if($cek == 0){
             $data->save();
         }else{
-            $data->update();
+            $data->save();
         }
-        return redirect('/data')->withSuccess('Data Kelurahan Berhasil Diperbarharui!');
+        return redirect('/data')->with('alert','Data Berhasil diupdate!');
     }
 
     /**
@@ -111,7 +150,20 @@ class DataController extends Controller
      */
     public function edit(Data $data)
     {
-        //
+        // return $data;
+        $tanggalSekarang = $this->dateFormatName;
+        $kabupaten = Kabupaten::get();
+        $thisKec = Kelurahan::select('id_kecamatan')->where('id',$data->id_kelurahan)->first();
+        // return $thisKec;
+        $thisKecamatan = Kecamatan::where('id',$thisKec->id_kecamatan)->first();
+        $thisKab = Kecamatan::select('id_kabupaten')->where('id',$thisKec->id_kecamatan)->first();
+        $thisKabupaten = Kabupaten::where('id',$thisKab->id_kabupaten)->first();
+        $thisKelurahan = Kelurahan::where('id',$data->id_kelurahan)->first();
+        $data1 = Data::select('updated_at')->get();
+        $kelurahanBelumUpdate = Kelurahan::whereDoesntHave('data', function($query){
+            $query->where('tanggal','=',$this->dateNow)->where('status','=',1);
+        })->get();
+        return view('data.index', compact("kabupaten","kelurahanBelumUpdate","data","tanggalSekarang","thisKecamatan","thisKabupaten","thisKelurahan"));
     }
 
     /**
