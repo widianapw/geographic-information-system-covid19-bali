@@ -128,7 +128,7 @@ class DataController extends Controller
         }else{
             $data->save();
         }
-        return redirect('/data')->with('alert','Data Berhasil diupdate!');
+        return redirect('/data')->with('alertSuccess','Data Berhasil diupdate!');
     }
 
     /**

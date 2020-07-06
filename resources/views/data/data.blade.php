@@ -16,6 +16,11 @@
                         {{ session('alert') }}
                     </div>
                 @endif
+                @if (session('alertSuccess'))
+                    <div class="alert alert-success">
+                        {{ session('alertSuccess') }}
+                    </div>
+                @endif
                 <form action="/searchData" method="POST">
                     @csrf
                     <h5>Cari Tanggal </h5>

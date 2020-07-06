@@ -15,11 +15,6 @@
                     <h4 class="card-title">Tambah dan update Data</h4>
                 </div>
                 <div class="card-body">
-                    @if (session('alert'))
-                        <div class="alert alert-success">
-                            {{ session('alert') }}
-                        </div>
-                    @endif
                     @if ($kelurahanBelumUpdate->count() > 0)
                     <div class="callout callout-danger red">
                     <h4><i class="icon fa fa-calendar red"></i> Data Kelurahan Yang Belum Diupdate per <strong>{{$tanggalSekarang}}</strong> <a href="#" id="expandable">Lihat detail</a></h4>
